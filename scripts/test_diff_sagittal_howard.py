@@ -1,5 +1,7 @@
 import numpy
-from srxraylib.plot.gol import plot
+from srxraylib.plot.gol import plot, set_qt
+set_qt()
+
 a = numpy.loadtxt("diaboloid_sagittal.txt")
 x = a[:,0].copy()
 y = a[:,1].copy()
