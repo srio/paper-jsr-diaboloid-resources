@@ -26,7 +26,7 @@ f = plot(
      # Y, R0s + pendent * Y,
      # Y, RRRs,
      legend=["p=20, q=5 Type I","p=20, q=10 Type I","p=20, q=15 Type I"], #, "Rs linearized (Eq. 9)", "Rs naive (see text)", ],
-     xtitle="Y [m]", ytitle="Rs [m]", title="theta=2mrad",show=0)
+     xtitle="Y [m]", ytitle="Rs [m]", title="theta=2mrad",show=0, figsize=(12,6))
 
 q=20
 p=5

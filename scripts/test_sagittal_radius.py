@@ -10,9 +10,10 @@ theta=2e-3
 Y = numpy.linspace(-0.8, 0.8, 1001)
 
 Rs = 2.0 * numpy.sin(theta) / (1 / p + 1 / q) + Y * 0
-R0s = numpy.sin(2 * theta) / (1 / p + 1 / q) + Y * 0
+R0s = numpy.sin(2 * theta) / (1 / p + 1 / q) + Y * 0  #  * numpy.cos(theta) ????????????
 
-RRs = 2 * p * (q - Y) * numpy.sin(theta) * numpy.sqrt(Y / p + (numpy.cos(theta))**2) / (p + q)
+YY = Y * numpy.cos(theta)  # added to pass y -> Y
+RRs = 2 * p * (q - YY) * numpy.sin(theta) * numpy.sqrt(YY / p + (numpy.cos(theta))**2) / (p + q)
 
 pY = -p * numpy.cos(theta)
 pZ = p * numpy.sin(theta)
@@ -31,7 +32,7 @@ f = plot(
      Y, RRs,
      Y, R0s + pendent * Y,
      Y, RRRs,
-     legend=["Rs (Eq. 8)", "Rs linearized (Eq. 9)", "Rs naive (see text)", ],
+     legend=["Rs (non-linear)", "Rs (linearized)", "Rs naive (see text)", ],
      xtitle="Y [m]", ytitle="Rs [m]", show=0)
 
 plt.savefig("sagittalradius.png")
