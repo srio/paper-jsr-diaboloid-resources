@@ -122,39 +122,35 @@ def run_shadow(T_IMAGE=8.075, RWIDX=0.02):
 def create_surface_file(ftype="toroid",p=18.8,q=8.075,theta=2e-3,ratio=1.0):
     from Shadow import ShadowTools as ST
     from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import ken_diaboloid_segment_to_point
-    from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import valeriy_diaboloid_segment_to_point
+    from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import valeriy_diaboloid_exact_segment_to_point
     from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import valeriy_parabolic_cone_segment_to_point
-    from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import toroid
+    from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import toroid_segment_to_point
 
     Rs = 2.0 * numpy.sin(theta) / (1 / p + 1 / q) * ratio
     Y = numpy.linspace(-0.8, 0.8, 1001)
     X = numpy.linspace(-Rs, Rs, 101)
 
     if ftype == "toroid":
-        Z = toroid(configuration=5,
+        Z = toroid_segment_to_point(
                    p=p,
                    q=q,
                    theta=theta,
                    x=X,
-                   y=Y,
-                   filename_h5="diaboloid.h5")
+                   y=Y)
     elif ftype == "diaboloid":
-        Z, XX, YY = ken_diaboloid_segment_to_point(
+        Z, XX, YY = valeriy_diaboloid_exact_segment_to_point(
                    p=p,
                    q=q,
                    theta=theta,
                    x=X,
-                   y=Y,
-                   detrend=1,
-                   filename_h5="diaboloid.h5")
+                   y=Y)
     elif ftype == "parabolic-cone":
         Z, XX, YY = valeriy_parabolic_cone_segment_to_point(
                    p=p,
                    q=q,
                    theta=theta,
                    x=X,
-                   y=Y,
-                   filename_h5="diaboloid.h5")
+                   y=Y)
 
     # print(Z.shape, X.shape, Y.shape)
     ST.write_shadow_surface(Z.T,
@@ -256,10 +252,9 @@ if True:
 
         q = p / m # 8.075
 
-        Rs = create_surface_file(ftype="diaboloid", q=q, ratio=0.81)
-        # Rs = create_surface_file(ftype="parabolic-cone", q=q, ratio=0.81)
+        # Rs = create_surface_file(ftype="diaboloid", q=q, ratio=0.81)
+        Rs = create_surface_file(ftype="parabolic-cone", q=q, ratio=0.81)
         # Rs = create_surface_file(ftype="toroid", q=q, ratio=0.99)
-
         beam = run_shadow(T_IMAGE=q, RWIDX=Rs)
 
         tkt = beam.histo2(1, 3, ref=23, nolost=1, nbins=301) #, xrange=[-200e-6, 200e-6], yrange=[-350e-6, 50e-6])
