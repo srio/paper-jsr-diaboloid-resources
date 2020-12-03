@@ -1,0 +1,27 @@
+Toroid Rt: 4000.002667 m, Rs:  0.013333 m
+File written to disk: diaboloid_detrended_1:5_image.png
+File written to disk: diaboloid_detrended_1:5_profile.png
+
+Toroid Rt: 10000.006667 m, Rs:  0.026667 m
+File written to disk: diaboloid_detrended_1:2_image.png
+File written to disk: diaboloid_detrended_1:2_profile.png
+
+Toroid Rt: 20000.013333 m, Rs:  0.040000 m
+File written to disk: diaboloid_detrended_1:1_image.png
+File written to disk: diaboloid_detrended_1:1_profile.png
+
+
+
+Toroid Rt: 1600.006667 m, Rs:  0.033333 m
+File written to disk: diaboloid_detrended_5mrad_1:5_image.png
+File written to disk: diaboloid_detrended_5mrad_1:5_profile.png
+
+Toroid Rt: 4000.016667 m, Rs:  0.066666 m
+File written to disk: diaboloid_detrended_5mrad_1:2_image.png
+File written to disk: diaboloid_detrended_5mrad_1:2_profile.png
+
+
+Toroid Rt: 8000.033333 m, Rs:  0.100000 m
+File written to disk: diaboloid_detrended_5mrad_1:1_image.png
+File written to disk: diaboloid_detrended_5mrad_1:1_profile.png
+
