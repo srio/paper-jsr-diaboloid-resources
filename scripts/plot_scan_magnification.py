@@ -2,10 +2,25 @@ import numpy
 from srxraylib.plot.gol import plot
 import matplotlib.pylab as plt
 
+import matplotlib
+# matplotlib.rc('xtick', labelsize=20)
+# matplotlib.rc('ytick', labelsize=20)
+
+params = {'legend.fontsize': 15,
+          'legend.handlelength': 2,
+          'axes.titlesize' : 24,
+          'axes.labelsize' : 20,
+          'lines.linewidth' : 3,
+          'lines.markersize' : 10,
+          'xtick.labelsize' : 16,
+          'ytick.labelsize' : 16,
+          }
+plt.rcParams.update(params)
+
 
 
 mirror_names = ["diaboloid", "toroid"] #, "parabolic-cone"]
-ylimit = [75, 500, 200]
+ylimit = [100, 500, 200]
 # ylimit = [60, 200]
 # a = numpy.loadtxt("parabolic-cone.dat").T
 # a = numpy.loadtxt("diaboloid.dat").T
@@ -28,16 +43,23 @@ for i, mirror_name in enumerate(mirror_names):
         1 / a[0, :], a[7, :] * a[0, :],
         1 / a[0, :], a[2, :] * a[0, :],
         1 / a[0, :], a[8, :] * a[0, :],
-        legend=["Horizontal FWHM/M",
+        1 / a[0, :], numpy.sqrt(a[2, :] ** 2 + a[1, :] ** 2) * a[0, :],
+        1 / a[0, :], numpy.sqrt(a[8, :] ** 2 + a[7, :] ** 2) * a[0, :],
+        legend=[
+                "Horizontal FWHM/M",
                 "Horizontal $\sigma$/M",
                 "Vertical FWHM/M",
-                "Vertical $\sigma$/M"],
+                "Vertical $\sigma$/M",
+                "Radial FWHM/M",
+                "Radial $\sigma$/M",
+                ],
         yrange=[0,ylimit[i]],xrange=[0.15,1],
-        color=['red','red','blue','blue'],
-        linestyle=['--',None,'--',None],
+        color=['red','red','blue','blue','green','green',],
+        linestyle=['--',None,'--',None,'--',None],
         xtitle="Magnification",
         ytitle="Intensity distribution / M [$\mu$m]",
-        show=False)
+        show=False,
+        figsize=(10,6))
 
     file_png = "scan_%s.png" % mirror_name
     plt.savefig(file_png)
@@ -45,6 +67,16 @@ for i, mirror_name in enumerate(mirror_names):
 
     plt.show()
 
+    tmp1 = numpy.sqrt(a[2, :] ** 2 + a[1, :] ** 2) * a[0, :]
+    tmp2 = numpy.sqrt(a[8, :] ** 2 + a[7, :] ** 2) * a[0, :]
+    tmp1_min = numpy.argmin(tmp1)
+    tmp2_min = numpy.argmin(tmp2)
+    print("Minumum found for RADIAL FWHM, sigma", 1 / a[0, tmp1_min], 1 / a[0, tmp2_min] )
+    tmp1 = a[2, :]
+    tmp2 = a[8, :]
+    tmp1_min = numpy.argmin(tmp1)
+    tmp2_min = numpy.argmin(tmp2)
+    print("Minumum found for VERTICAL FWHM, sigma", 1 / a[0, tmp1_min], 1 / a[0, tmp2_min])
 
 # out[0, i] = m
 # out[1, i] = tkt["fwhm_h"] * 1e6
