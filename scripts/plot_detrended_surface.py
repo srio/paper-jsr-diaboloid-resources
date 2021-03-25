@@ -1,23 +1,27 @@
-from srxraylib.plot.gol import plot_image, plot
-import h5py
-
-import matplotlib
-matplotlib.rc('xtick', labelsize=20)
-matplotlib.rc('ytick', labelsize=20)
-import pylab as plt
+from srxraylib.plot.gol import plot_image, plot, plot_show, set_qt
 import numpy
 
-params = {'legend.fontsize': 20,
-          'legend.handlelength': 2}
-plt.rcParams.update(params)
+# import h5py
+# import matplotlib
+import pylab as plt
 
-def create_surface(p=20.0,M=1.0,theta=2e-3,shape='exact'):
-    from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import valeriy_diaboloid_exact_segment_to_point
-    from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import toroid_segment_to_point
-    from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import valeriy_parabolic_cone_linearized_segment_to_point
-    from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import valeriy_parabolic_cone_segment_to_point
 
-    Y = numpy.linspace(-0.1, 0.1, 1001)
+
+set_qt()
+
+
+def create_surface(p=20.0,M=1.0,theta=2e-3,shape='diaboloid'):
+    # from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import valeriy_diaboloid_exact_segment_to_point
+    # from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import toroid_segment_to_point
+    # from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import valeriy_parabolic_cone_linearized_segment_to_point
+    # from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import valeriy_parabolic_cone_segment_to_point
+    from orangecontrib.syned.util.diaboloid_tools import diaboloid_exact_segment_to_point
+    from orangecontrib.syned.util.diaboloid_tools import toroid_segment_to_point
+    from orangecontrib.syned.util.diaboloid_tools import parabolic_cone_linearized_segment_to_point
+    from orangecontrib.syned.util.diaboloid_tools import parabolic_cone_segment_to_point
+
+
+    Y = numpy.linspace(-0.4, 0.4, 1001)
     X = numpy.linspace(-0.01, 0.01, 101)
 
     q = p * M
@@ -29,28 +33,28 @@ def create_surface(p=20.0,M=1.0,theta=2e-3,shape='exact'):
                y=Y)
 
     if shape == 'diaboloid':
-        Zd, XX, YY = valeriy_diaboloid_exact_segment_to_point(
+        Zd, XX, YY = diaboloid_exact_segment_to_point(
                    p=p,
                    q=q,
                    theta=theta,
                    x=X,
                    y=Y)
     elif shape == 'parabolic-cone':
-        Zd, XX, YY = valeriy_parabolic_cone_segment_to_point(
+        Zd, XX, YY = parabolic_cone_segment_to_point(
                    p=p,
                    q=q,
                    theta=theta,
                    x=X,
                    y=Y)
     elif shape == 'linearized-parabolic-cone':
-        Zd, XX, YY = valeriy_parabolic_cone_linearized_segment_to_point(
+        Zd, XX, YY = parabolic_cone_linearized_segment_to_point(
                    p=p,
                    q=q,
                    theta=theta,
                    x=X,
                    y=Y)
     elif shape == 'elliptical-cylinder':
-        Zd, XX, YY = valeriy_diaboloid_exact_segment_to_point(
+        Zd, XX, YY = diaboloid_exact_segment_to_point(
                    p=p,
                    q=q,
                    theta=theta,
@@ -83,20 +87,57 @@ def create_surface(p=20.0,M=1.0,theta=2e-3,shape='exact'):
 #     f.close()
 #     return Z, X, Y
 
-def do_plot(Z, X, Y, filename_root="tmp", do_show=False):
-    ff = 1.5
-    figsize=[7*ff,7*ff]
-    figsize2 = [7*ff,6*ff / 2 + 2]
+def do_plot(Z, X, Y, filename_root="tmp", title="", do_show=False):
+    fontsize = 40
+    # fontsize_legend = 22
+    # matplotlib.rc('xtick', labelsize=fontsize)
+    # matplotlib.rc('ytick', labelsize=fontsize)
+    # params = {'legend.fontsize':     fontsize,
+    #           'legend.handlelength': fontsize // 20}
+    # plt.rcParams.update(params)
+
+
+    plt.rcParams.update(plt.rcParamsDefault)
+    plt.rcParams.update({'figure.autolayout': True})
+
+    plt.rc('font', size=fontsize)
+    # plt.rc('axes', titlesize=fontsize)
+    plt.rc('axes',  labelsize=fontsize * 8 // 10)
+    plt.rc('xtick', labelsize=fontsize * 8 // 10)
+    plt.rc('ytick', labelsize=fontsize * 8 // 10)
+    # plt.tight_layout()
+
+    # from matplotlib import rcParams
+
+#
+    ff = 1.5 # 3.5 # 1.5
+    figsize  = [7 * ff, 7 * ff]
+    figsize2 = [7 * ff, 6 * ff / 2 + 2]
+
+    # plt.gcf().subplots_adjust(bottom=0.15)
+
+    nx, ny = Z.shape
+
 
     xtitle="X [mm]"
     ytitle="Y [mm]"
-    fig, ax = plot_image(1e6 * Z, 1e3 * X, 1e3 * Y, cmap='jet', aspect='auto', figsize=figsize, add_colorbar=False,title="", show=False)
+    fig, ax = plot_image(1e6 * Z, 1e3 * X, 1e3 * Y, cmap='jet', aspect='auto', figsize=figsize, add_colorbar=False,
+                         title="", show=False)
 
 
-    ax.set_xlabel(xtitle,fontsize=20)
-    ax.set_ylabel(ytitle,fontsize=20)
+    ax.set_xlabel(xtitle,) #fontsize=fontsize)
+    ax.set_ylabel(ytitle,) #fontsize=fontsize)
+    ax.set_title(title,  ) #fontsize=fontsize)
 
-    # filename_png = filename[0:-3] + "_image.png"
+    # ONLY 5 ticks in Y
+    ymin, ymax = ax.get_ylim()
+    ax.set_yticks(numpy.round(numpy.linspace(ymin, ymax, 5), 2))
+
+
+    ax.plot([-100, 100], [-100,-100])
+    ax.plot([-100, 100], [0,0])
+    ax.plot([-100, 100], [100,100])
+
     filename_png = filename_root + "_image.png"
 
     plt.savefig(filename_png)  # ,dpi=600)
@@ -108,22 +149,48 @@ def do_plot(Z, X, Y, filename_root="tmp", do_show=False):
     #
     #
 
-    nx, ny = Z.shape
+    plt.rcParams.update(plt.rcParamsDefault)
+    plt.rcParams.update({'figure.autolayout': True})
+    #
+    plt.rc('font', size=fontsize * 3 // 4)
+    # plt.rc('axes', titlesize=fontsize)
+    plt.rc('axes', labelsize=fontsize * 5 // 8)
+    plt.rc('xtick', labelsize=fontsize * 5 // 8)
+
+    plt.rc('legend', fontsize=fontsize * 5 // 8)
+
+
+    # plt.legend(frameon=False)
+    # ax2.legend(loc='upper left', frameon=None)
+    # plt.rc('ytick', labelsize=fontsize * 8 // 10)
+    # plt.tight_layout()
+
+
     x = X * 1e3
     z0 = Z[:,ny//2] * 1e6
-    zstart = Z[:,0] * 1e6
-    zend = Z[:,-1] * 1e6
-    ytitle="Y [$\mu$m]"
+
+    # zstart = Z[:, 0] * 1e6
+    # zend   = Z[:, -1] * 1e6
+
+    zstart = Z[:, ny * 3 // 8] * 1e6
+    zend   = Z[:, ny * 5 // 8] * 1e6
+
+
+
+    ytitle="Z [$\mu$m]"
     xtitle="X [mm]"
     fig, ax = plot(x, zstart, x, z0, x, zend, show=0, figsize=figsize2,
         legend=["Y=-100", "Y=0", "Y=100"])
 
-    #fig.legend(loc=1, prop={'size': 6})
-    ax.set_xlabel(xtitle,fontsize=22)
-    ax.set_ylabel(ytitle,fontsize=22)
+    plt.legend(frameon=False)
+    # ax2.legend(loc='upper left', frameon=None)
+    # fig.legend(loc=1, prop={'size': 6})
+    # import matplotlib
 
-    #filename = "/tmp/detrended_profiles.png"
-    # filename_png = filename[0:-3] + "_profile.png"
+    ax.set_xlabel(xtitle, fontsize=fontsize * 5 // 8)
+    ax.set_ylabel(ytitle, fontsize=fontsize * 5 // 8)
+
+
     filename_png = filename_root + "_profile.png"
 
     plt.savefig(filename_png)  # ,dpi=600)
@@ -131,12 +198,11 @@ def do_plot(Z, X, Y, filename_root="tmp", do_show=False):
     if do_show: plt.show()
 
 if __name__ == "__main__":
-    # Z, X, Y = get_surface()
 
     #
     # FIG 7
     #
-    if False:
+    if True:
         CASES = [
             "diaboloid_detrended_1:1",
             "diaboloid_detrended_1:2",
@@ -150,28 +216,36 @@ if __name__ == "__main__":
 
         for i in range(len(CASES)):
             Z, X, Y = create_surface(M=M[i], theta=THETA[i])
-            do_plot(Z, X, Y, filename_root=CASES[i], do_show=False)
+            title=r"$\theta$=%d mrad    M=q:p=1:%d" % (int(THETA[i]*1e3), int(1/M[i]))
+            do_plot(Z, X, Y, filename_root=CASES[i], title=title, do_show=False)
 
     #
     # FIG 8
     #
 
-    # diaboloid_bl1222_detrended_image.png
-    # paraboliccone_bl1222_detrended_image.png
-    # ellipticalcylinder_bl1222_detrended_image.png
 
     if False:
         CASES = [
             "diaboloid_bl1222_detrended",
-            "paraboliccone_bl1222_detrended",
+            # "paraboliccone_bl1222_detrended",
             "ellipticalcylinder_bl1222_detrended",
+            "linearized-parabolic-cone_bl1222_detrended",
             ]
 
-        SHAPES = ['diaboloid', 'parabolic-cone', 'elliptical-cylinder']
+        SHAPES = ['diaboloid',
+                  # 'parabolic-cone',
+                  'elliptical-cylinder',
+                  'linearized-parabolic-cone'
+                  ]
 
         for i in range(len(CASES)):
             Z, X, Y = create_surface(p=18.8, M=8.0750/18.8000, theta=2.0e-3, shape=SHAPES[i],)
             do_plot(Z, X, Y, filename_root=CASES[i], do_show=False)
 
-    Z, X, Y = create_surface(p=18.8, M=8.0750 / 18.8000, theta=2.0e-3, shape='linearized-parabolic-cone' )
-    do_plot(Z, X, Y, filename_root="linearizedparaboliccone_bl1222_detrended", do_show=True)
+
+
+    # Z, X, Y = create_surface(p=18.8, M=8.0750 / 18.8000, theta=2.0e-3, shape='linearized-parabolic-cone' )
+    # title = r"$\theta$=%d mrad    M=q:p=1:%d" % (int(2e-3 * 1e3), int(1 / (18.0/8.075)))
+    # do_plot(Z, X, Y, filename_root="linearizedparaboliccone_bl1222_detrended", title=title, do_show=False)
+
+    plot_show()
