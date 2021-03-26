@@ -11,10 +11,8 @@ set_qt()
 
 
 def create_surface(p=20.0,M=1.0,theta=2e-3,shape='diaboloid'):
-    # from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import valeriy_diaboloid_exact_segment_to_point
-    # from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import toroid_segment_to_point
-    # from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import valeriy_parabolic_cone_linearized_segment_to_point
-    # from orangecontrib.syned.als.widgets.tools.ow_als_diaboloid import valeriy_parabolic_cone_segment_to_point
+
+    # file available at: https://github.com/oasys-kit/OASYS-SYNED/blob/master/orangecontrib/syned/util/diaboloid_tools.py
     from orangecontrib.syned.util.diaboloid_tools import diaboloid_exact_segment_to_point
     from orangecontrib.syned.util.diaboloid_tools import toroid_segment_to_point
     from orangecontrib.syned.util.diaboloid_tools import parabolic_cone_linearized_segment_to_point
@@ -87,7 +85,7 @@ def create_surface(p=20.0,M=1.0,theta=2e-3,shape='diaboloid'):
 #     f.close()
 #     return Z, X, Y
 
-def do_plot(Z, X, Y, filename_root="tmp", title="", do_show=False):
+def do_plot(Z, X, Y, filename_root="tmp", title="", do_show=False, legend_position=None):
     fontsize = 40
     # fontsize_legend = 22
     # matplotlib.rc('xtick', labelsize=fontsize)
@@ -121,8 +119,8 @@ def do_plot(Z, X, Y, filename_root="tmp", title="", do_show=False):
 
     xtitle="X [mm]"
     ytitle="Y [mm]"
-    fig, ax = plot_image(1e6 * Z, 1e3 * X, 1e3 * Y, cmap='jet', aspect='auto', figsize=figsize, add_colorbar=False,
-                         title="", show=False)
+    fig, ax = plot_image(1e6 * Z, 1e3 * X, 1e3 * Y, yrange=[-405,405],
+                         cmap='jet', aspect='auto', figsize=figsize, add_colorbar=False, title="", show=False)
 
 
     ax.set_xlabel(xtitle,) #fontsize=fontsize)
@@ -131,12 +129,13 @@ def do_plot(Z, X, Y, filename_root="tmp", title="", do_show=False):
 
     # ONLY 5 ticks in Y
     ymin, ymax = ax.get_ylim()
-    ax.set_yticks(numpy.round(numpy.linspace(ymin, ymax, 5), 2))
+    ax.set_yticks(numpy.round(numpy.linspace(-400, 400, 5), 2))
 
-
+    ax.plot([-100, 100], [-400, -400], linestyle="--")
     ax.plot([-100, 100], [-100,-100])
-    ax.plot([-100, 100], [0,0])
+    ax.plot([-100, 100], [0,0], linestyle="-.")
     ax.plot([-100, 100], [100,100])
+    ax.plot([-100, 100], [400,400], linestyle="--", color='cyan')
 
     filename_png = filename_root + "_image.png"
 
@@ -157,7 +156,9 @@ def do_plot(Z, X, Y, filename_root="tmp", title="", do_show=False):
     plt.rc('axes', labelsize=fontsize * 5 // 8)
     plt.rc('xtick', labelsize=fontsize * 5 // 8)
 
-    plt.rc('legend', fontsize=fontsize * 5 // 8)
+    plt.rc('legend', fontsize=fontsize * 4 // 8)
+    if legend_position is not None:
+        plt.rc('legend', loc=legend_position)
 
 
     # plt.legend(frameon=False)
@@ -175,12 +176,22 @@ def do_plot(Z, X, Y, filename_root="tmp", title="", do_show=False):
     zstart = Z[:, ny * 3 // 8] * 1e6
     zend   = Z[:, ny * 5 // 8] * 1e6
 
-
+    zstart0 = Z[:, 0] * 1e6
+    zend0   = Z[:, -1] * 1e6
 
     ytitle="Z [$\mu$m]"
     xtitle="X [mm]"
-    fig, ax = plot(x, zstart, x, z0, x, zend, show=0, figsize=figsize2,
-        legend=["Y=-100", "Y=0", "Y=100"])
+    fig, ax = plot(x, zstart0,
+                   x, zstart,
+                   x, z0,
+                   x, zend,
+                   x, zend0,
+                   show=0,
+                   figsize=figsize2,
+                   # title=title,
+                   legend=["Y=-400", "Y=-100", "Y=0", "Y=100", "Y=400"],
+                   linestyle=["--",None,"-.",None,"--"],
+                   color=[None,None,None,None,'cyan'])
 
     plt.legend(frameon=False)
     # ax2.legend(loc='upper left', frameon=None)
@@ -217,7 +228,7 @@ if __name__ == "__main__":
         for i in range(len(CASES)):
             Z, X, Y = create_surface(M=M[i], theta=THETA[i])
             title=r"$\theta$=%d mrad    M=q:p=1:%d" % (int(THETA[i]*1e3), int(1/M[i]))
-            do_plot(Z, X, Y, filename_root=CASES[i], title=title, do_show=False)
+            do_plot(Z, X, Y, filename_root=CASES[i], title=title, do_show=False, legend_position='lower center')
 
     #
     # FIG 8

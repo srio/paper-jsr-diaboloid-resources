@@ -1,22 +1,27 @@
 import numpy
-from srxraylib.plot.gol import plot
+from srxraylib.plot.gol import plot, set_qt
 import matplotlib.pylab as plt
 
-import matplotlib
-# matplotlib.rc('xtick', labelsize=20)
-# matplotlib.rc('ytick', labelsize=20)
+
+set_qt()
+
+plt.rcParams.update(plt.rcParamsDefault)
+plt.rcParams.update({'figure.autolayout': True})
 
 params = {'legend.fontsize': 15,
+          'legend.frameon': False,
           'legend.handlelength': 2,
-          'axes.titlesize' : 24,
-          'axes.labelsize' : 20,
-          'lines.linewidth' : 3,
+          # 'axes.titlesize' : 24,
+          'axes.labelsize' :   24,
+          'lines.linewidth' :  3,
           'lines.markersize' : 10,
-          'xtick.labelsize' : 16,
-          'ytick.labelsize' : 16,
+          'xtick.labelsize' :  25,
+          'ytick.labelsize' :  25,
+          # 'grid.color':       'r',
+          # 'grid.linestyle':   '-',
+          # 'grid.linewidth':     2,
           }
 plt.rcParams.update(params)
-
 
 
 mirror_names = ["diaboloid", "toroid"] #, "parabolic-cone"]
@@ -38,7 +43,7 @@ for i, mirror_name in enumerate(mirror_names):
     #     yrange=[0,500],
     #     xtitle="Magnification",ytitle="")
 
-    plot(
+    fig, ax = plot(
         1 / a[0, :], a[1, :] * a[0, :],
         1 / a[0, :], a[7, :] * a[0, :],
         1 / a[0, :], a[2, :] * a[0, :],
@@ -46,22 +51,25 @@ for i, mirror_name in enumerate(mirror_names):
         1 / a[0, :], numpy.sqrt(a[2, :] ** 2 + a[1, :] ** 2) * a[0, :],
         1 / a[0, :], numpy.sqrt(a[8, :] ** 2 + a[7, :] ** 2) * a[0, :],
         legend=[
-                "Horizontal FWHM/M",
-                "Horizontal $\sigma$/M",
-                "Vertical FWHM/M",
-                "Vertical $\sigma$/M",
-                "Radial FWHM/M",
-                "Radial $\sigma$/M",
+                "Horizontal FWHM/$M$",
+                "Horizontal $\sigma/M$",
+                "Vertical FWHM/$M$",
+                "Vertical $\sigma/M$",
+                "Radial FWHM/$M$",
+                "Radial $\sigma/M$",
                 ],
         yrange=[0,ylimit[i]],xrange=[0.15,1],
         color=['red','red','blue','blue','green','green',],
         linestyle=['--',None,'--',None,'--',None],
-        xtitle="Magnification",
-        ytitle="Intensity distribution / M [$\mu$m]",
+        xtitle="Magnification $M$",
+        ytitle="Focal size over $M$ [$\mu$m]",
         show=False,
         figsize=(10,6))
 
-    file_png = "scan_%s.png" % mirror_name
+    # plt.grid()
+    ax.yaxis.grid()
+
+    file_png = "scan_%s.pdf" % mirror_name
     plt.savefig(file_png)
     print("File written to disk: %s" % file_png)
 
